@@ -7,6 +7,7 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements RollLengthDialogF
     private CountDownTimer mTimer;
     private long mTimerLength = 2000;
     private int mCurrentDie;
+    private  int mInitX;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +55,31 @@ public class MainActivity extends AppCompatActivity implements RollLengthDialogF
             registerForContextMenu(mDiceImageViews[i]);
             mDiceImageViews[i].setTag(i);
         }
+
+        // Moving finger left or right changes dice number
+        mDiceImageViews[0].setOnTouchListener((v, event) -> {
+            int action = event.getAction();
+            switch (action) {
+                case MotionEvent.ACTION_DOWN:
+                    mInitX = (int) event.getX();
+                    return true;
+                case MotionEvent.ACTION_MOVE:
+                    int x = (int) event.getX();
+
+                    // See if movement is at least 20 pixels
+                    if (Math.abs(x - mInitX) >= 20) {
+                        if (x > mInitX) {
+                            mDice[0].addOne();
+                        } else {
+                            mDice[0].subtractOne();
+                        }
+                        showDice();
+                        mInitX = x;
+                    }
+                    return true;
+            }
+            return false;
+        });
     }
 
     @Override
