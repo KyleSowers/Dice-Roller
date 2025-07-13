@@ -3,7 +3,11 @@ package com.zybooks.diceroller;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -50,6 +54,41 @@ public class MainActivity extends AppCompatActivity {
             Drawable diceDrawable = ContextCompat.getDrawable(this, mDice[i].getImageId());
             mDiceImageViews[i].setImageDrawable(diceDrawable);
             mDiceImageViews[i].setContentDescription(Integer.toString(mDice[i].getNumber()));
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        // Determine which menu option was chosen
+        if (item.getItemId() == R.id.action_one) {
+            changeDiceVisibility(1);
+            showDice();
+            return true;
+        } else if (item.getItemId() == R.id.action_two) {
+            changeDiceVisibility(2);
+            showDice();
+            return true;
+        } else if (item.getItemId() == R.id.action_three) {
+            changeDiceVisibility(3);
+            showDice();
+            return true;
+        }
+
+        return  super.onOptionsItemSelected(item);
+    }
+
+    private void changeDiceVisibility(int numVisible) {
+        mVisibleDice = numVisible;
+
+        // Make dice visible
+        for (int i = 0; i < numVisible; i++) {
+            mDiceImageViews[i].setVisibility(View.VISIBLE);
+        }
+
+        // Hide remaining dice
+        for (int i = numVisible; i < MAX_DICE; i++) {
+            mDiceImageViews[i].setVisibility(View.GONE);
         }
     }
 
