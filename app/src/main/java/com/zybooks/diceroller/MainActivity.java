@@ -2,6 +2,7 @@ package com.zybooks.diceroller;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +18,8 @@ public class MainActivity extends AppCompatActivity {
     public int mVisibleDice;
     private Dice[] mDice;
     private ImageView[] mDiceImageViews;
+    private Menu mMenu;
+    private CountDownTimer mTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.appbar_menu, menu);
+        mMenu = menu;
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -73,6 +77,13 @@ public class MainActivity extends AppCompatActivity {
             changeDiceVisibility(3);
             showDice();
             return true;
+        } else if (item.getItemId() == R.id.action_stop) {
+            mTimer.cancel();
+            item.setVisible(false);
+            return true;
+        } else if (item.getItemId() == R.id.action_roll) {
+            rollDice();
+            return true;
         }
 
         return  super.onOptionsItemSelected(item);
@@ -90,6 +101,26 @@ public class MainActivity extends AppCompatActivity {
         for (int i = numVisible; i < MAX_DICE; i++) {
             mDiceImageViews[i].setVisibility(View.GONE);
         }
+    }
+
+    private void rollDice() {
+        mMenu.findItem(R.id.action_stop).setVisible(true);
+
+        if (mTimer != null) {
+            mTimer.cancel();
+        }
+
+        mTimer = new CountDownTimer(2000, 100) {
+            public  void onTick(long millisUnitFinished) {
+                for (int i = 0; i < mVisibleDice; i++) {
+                    mDice[i].roll();
+                }
+                showDice();
+            }
+            public  void onFinish() {
+                mMenu.findItem(R.id.action_stop).setVisible(false);
+            }
+        }.start();
     }
 
 }
